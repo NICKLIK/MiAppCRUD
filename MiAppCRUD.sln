@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiAppCRUD.Server", "MiAppCRUD.Server\MiAppCRUD.Server.csproj", "{6BA86071-921E-4C14-A81B-7642D4896964}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "miappcrud.client", "miappcrud.client\miappcrud.client.esproj", "{DB839800-AF83-4E48-BB21-17C586C09C81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6BA86071-921E-4C14-A81B-7642D4896964}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BA86071-921E-4C14-A81B-7642D4896964}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BA86071-921E-4C14-A81B-7642D4896964}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BA86071-921E-4C14-A81B-7642D4896964}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB839800-AF83-4E48-BB21-17C586C09C81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB839800-AF83-4E48-BB21-17C586C09C81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB839800-AF83-4E48-BB21-17C586C09C81}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{DB839800-AF83-4E48-BB21-17C586C09C81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB839800-AF83-4E48-BB21-17C586C09C81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB839800-AF83-4E48-BB21-17C586C09C81}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
