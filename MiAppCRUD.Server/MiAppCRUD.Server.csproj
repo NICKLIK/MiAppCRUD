@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\assets\index-BY428BFj.js" />
+    <Content Remove="wwwroot\assets\index-CF8UCLb1.css" />
+    <Content Remove="wwwroot\index.html" />
+    <Content Remove="wwwroot\vite.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
@@ -27,6 +34,13 @@
     <ProjectReference Include="..\miappcrud.client\miappcrud.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\assets\index-BY428BFj.js" />
+    <None Include="wwwroot\assets\index-CF8UCLb1.css" />
+    <None Include="wwwroot\index.html" />
+    <None Include="wwwroot\vite.svg" />
   </ItemGroup>
 
 </Project>

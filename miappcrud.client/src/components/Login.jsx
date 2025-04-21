@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
+import "./Login.css";
 
 function Login({ setEstaLogueado }) {
     const [nombreUsuario, setNombreUsuario] = useState("");
@@ -20,7 +21,7 @@ function Login({ setEstaLogueado }) {
 
     const iniciarSesion = async () => {
         if (!validarContrasena(contrasena)) {
-            alert("La contrasena debe tener al menos 8 caracteres, una mayuscula y un simbolo (./-_@)");
+            alert("La contraseña debe tener al menos 8 caracteres, una mayúscula y un símbolo (./-_@)");
             return;
         }
 
@@ -44,7 +45,7 @@ function Login({ setEstaLogueado }) {
 
     const registrarse = async () => {
         if (!validarContrasena(contrasena)) {
-            alert("La contrasena debe tener al menos 8 caracteres, una mayuscula y un simbolo (./-_@)");
+            alert("La contraseña debe tener al menos 8 caracteres, una mayúscula y un símbolo (./-_@)");
             return;
         }
 
@@ -58,28 +59,38 @@ function Login({ setEstaLogueado }) {
         });
 
         if (response.ok) {
-            alert("Registrado con exito");
+            alert("Registrado con éxito");
         } else {
-            alert("Error al registrar, Ya estas registrado o verifica tus credenciales");
+            alert("Error al registrar. Ya estás registrado o verifica tus credenciales");
         }
     };
 
     return (
         <div className="login-container">
-            <h1>Login / Registro</h1>
-            <input
-                placeholder="Usuario"
-                value={nombreUsuario}
-                onChange={(e) => setNombreUsuario(e.target.value)}
-            />
-            <input
-                type="password"
-                placeholder="Contraseña"
-                value={contrasena}
-                onChange={(e) => setContrasena(e.target.value)}
-            />
-            <button onClick={iniciarSesion}>Iniciar sesión</button>
-            <button onClick={registrarse}>Registrarse</button>
+            <h1 className="login-title">Bienvenid@. Ingresa con tu Cuenta</h1>
+            <div className="login-form-box">
+                <input
+                    className="login-input"
+                    placeholder="Usuario"
+                    value={nombreUsuario}
+                    onChange={(e) => setNombreUsuario(e.target.value)}
+                />
+                <input
+                    className="login-input"
+                    type="password"
+                    placeholder="Contrasena"
+                    value={contrasena}
+                    onChange={(e) => setContrasena(e.target.value)}
+                />
+                <div className="login-button-group">
+                    <button className="login-button iniciar" onClick={iniciarSesion}>
+                        Iniciar sesion
+                    </button>
+                    <button className="login-button registrar" onClick={registrarse}>
+                        Registrarse
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

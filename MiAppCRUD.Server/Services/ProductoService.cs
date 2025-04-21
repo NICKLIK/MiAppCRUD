@@ -14,19 +14,19 @@ namespace MiAppCRUD.Server.Services
             _context = context;
         }
 
-        // Obtener todos los productos
+    
         public async Task<List<Producto>> GetProductos()
         {
             return await _context.Productos.ToListAsync();
         }
 
-        // Obtener un producto por su ID
+       
         public async Task<Producto> GetProductoById(int id)
         {
             return await _context.Productos.FindAsync(id);
         }
 
-        // Crear un nuevo producto
+        
         public async Task<Producto> CrearProducto(Producto producto)
         {
             _context.Productos.Add(producto);
@@ -34,7 +34,7 @@ namespace MiAppCRUD.Server.Services
             return producto;
         }
 
-        // Actualizar un producto existente
+        
         public async Task<Producto> ActualizarProducto(int id, Producto producto)
         {
             var productoExistente = await _context.Productos.FindAsync(id);
@@ -52,7 +52,7 @@ namespace MiAppCRUD.Server.Services
             return productoExistente;
         }
 
-        // Eliminar un producto
+        
         public async Task<bool> EliminarProducto(int id)
         {
             var producto = await _context.Productos.FindAsync(id);
