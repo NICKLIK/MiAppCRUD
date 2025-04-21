@@ -5,8 +5,12 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configuración de la base de datos con Entity Framework
+var connectionString = builder.Environment.IsDevelopment()
+    ? builder.Configuration.GetConnectionString("DefaultConnection")  // Para desarrollo
+    : builder.Configuration.GetValue<string>("DB_CONNECTION_STRING");  // Para producción desde la variable de entorno
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlServer(connectionString)
 );
 
 // Servicios de la aplicación
