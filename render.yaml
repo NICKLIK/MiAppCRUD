@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: miappcrud-backend
+    runtime: docker
+    repo: https://github.com/TU_USUARIO/TU_REPO
+    branch: main
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DB_CONNECTION_STRING
+        value: postgresql://miappdb_user:frp5v2aYLtH5WpEnPfDVKQ9FZfAdQJLo@dpg-d039dkmuk2gs73ed6kfg-a.oregon-postgres.render.com/miappdb

@@ -10,7 +10,7 @@ var connectionString = builder.Environment.IsDevelopment()
     : builder.Configuration.GetValue<string>("DB_CONNECTION_STRING");  // Para producción desde la variable de entorno
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString)
+    options.UseNpgsql(connectionString)  // Usar PostgreSQL en lugar de SQL Server
 );
 
 // Servicios de la aplicación
