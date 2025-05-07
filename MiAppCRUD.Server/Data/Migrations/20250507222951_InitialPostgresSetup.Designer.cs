@@ -8,18 +8,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MiAppCRUD.Server.Migrations
+namespace MiAppCRUD.Server.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250421201350_InitialCreate3")]
-    partial class InitialCreate3
+    [Migration("20250507222951_InitialPostgresSetup")]
+    partial class InitialPostgresSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -38,17 +38,17 @@ namespace MiAppCRUD.Server.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(100)");
 
                     b.Property<decimal>("Precio")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("Stock")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Productos");
+                    b.ToTable("productos");
                 });
 
             modelBuilder.Entity("MiAppCRUD.Server.Models.Usuario", b =>
@@ -65,11 +65,11 @@ namespace MiAppCRUD.Server.Migrations
 
                     b.Property<string>("NombreUsuario")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("usuarios");
                 });
 #pragma warning restore 612, 618
         }
