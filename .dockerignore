@@ -1,0 +1,22 @@
+# Directorios a ignorar
+**/bin
+**/obj
+**/node_modules
+**/.git
+**/.vs
+**/.vscode
+
+# Archivos a ignorar
+*.md
+*.sln
+*.user
+*.suo
+*.lock
+*.log
+docker-compose*
+.gitignore
+
+# Archivos de configuración
+appsettings.Development.json
+.env
+.env.local

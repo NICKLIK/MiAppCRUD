@@ -9,6 +9,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "miappcrud.client", "miappcr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{DACE7C0B-DEC9-4DBD-A253-861D8030F2A2}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		Dockerfile = Dockerfile
 		render.yaml = render.yaml
 	EndProjectSection
 EndProject
