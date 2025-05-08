@@ -5,7 +5,7 @@
 **/.git
 **/.vs
 **/.vscode
-
+ 
 # Archivos a ignorar
 *.md
 *.sln
