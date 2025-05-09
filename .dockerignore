@@ -15,7 +15,7 @@
 *.log
 docker-compose*
 .gitignore
-
+ 
 # Archivos de configuración
 appsettings.Development.json
 .env

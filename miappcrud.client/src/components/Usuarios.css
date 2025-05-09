@@ -26,3 +26,64 @@
     color: #1c1c1c; 
     font-weight: 500;
 }
+
+/* Mantén los estilos anteriores y agrega estos nuevos */
+
+.usuarios-list {
+    margin-bottom: 30px;
+}
+
+.usuario-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.usuario-info {
+    flex: 1;
+    text-align: left;
+}
+
+    .usuario-info h3 {
+        margin: 0 0 10px 0;
+        color: #2c3e50;
+    }
+
+    .usuario-info p {
+        margin: 5px 0;
+        color: #34495e;
+    }
+
+.eliminar-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .eliminar-button:hover {
+        background-color: #c0392b;
+    }
+
+.logout-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+    .logout-button:hover {
+        background-color: #2980b9;
+    }

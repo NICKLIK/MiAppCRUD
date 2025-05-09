@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Usuarios.css"; 
+import "./Usuarios.css";
 
 function Usuarios() {
     const [usuarios, setUsuarios] = useState([]);
@@ -28,16 +28,29 @@ function Usuarios() {
 
     return (
         <div className="usuarios-container">
-            <h1>Informacion de los Usuarios Registrados</h1>
-            <ul>
+            <h1>Información de los Usuarios Registrados</h1>
+            <div className="usuarios-list">
                 {usuarios.map((u) => (
-                    <li key={u.id} className="usuario-item">
-                        {u.nombreUsuario}
-                        <button onClick={() => eliminar(u.id)}>Eliminar</button>
-                    </li>
+                    <div key={u.id} className="usuario-item">
+                        <div className="usuario-info">
+                            <h3>{u.nombre} {u.apellido}</h3>
+                            <p><strong>Correo:</strong> {u.correo}</p>
+                            <p><strong>Edad:</strong> {u.edad}</p>
+                            <p><strong>Género:</strong> {u.genero}</p>
+                            <p><strong>Ubicación:</strong> {u.ciudad}, {u.provincia}</p>
+                        </div>
+                        <button
+                            className="eliminar-button"
+                            onClick={() => eliminar(u.id)}
+                        >
+                            Eliminar
+                        </button>
+                    </div>
                 ))}
-            </ul>
-            <button className="logout-button" onClick={cerrarSesion}>Cerrar sesion</button>
+            </div>
+            <button className="logout-button" onClick={cerrarSesion}>
+                Cerrar sesión
+            </button>
         </div>
     );
 }
