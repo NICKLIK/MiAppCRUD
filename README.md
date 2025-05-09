@@ -1,3 +1,45 @@
+# DEBER ADMIN MVC
+Validación de Correo Electrónico en Backend
+Validación de Unicidad de Correo Electrónico
+Propósito
+Garantizar que cada dirección de correo electrónico sea única en el sistema, previniendo:
+Creación de múltiples cuentas con el mismo correo
+Conflictos en la identificación de usuarios
+Problemas en procesos de recuperación de contraseña
+
+Consideraciones de Seguridad
+No revelar información: El mensaje de error es genérico ("Credenciales inválidas") en login
+Hash seguro: El correo se almacena tal cual para funcionalidades de negocio
+Índice único: Recomendable en campo Correo en la base de datos
+
+Flujo de Validación Completo
+Frontend (validación inicial):
+Verifica formato con regex
+llama a endpoint /validar-correo mientras el usuario escribe
+Backend (validación definitiva):
+Verifica en base de datos antes de crear/actualizar
+Retorna error 400 con mensaje claro si el correo existe
+
+Validación de Correo Electrónico
+Implementación:
+Se agregó validación de formato con regex ^[^\s@]+@[^\s@]+\.[^\s@]+$
+Validación de unicidad en backend antes de registrar
+Mensajes de error específicos:
+"El correo electrónico no es válido" (formato incorrecto)
+"El correo electrónico ya está registrado" (duplicado)
+
+Validaciones Implementadas
+
+Validación de Consistencia:
+No se puede seleccionar ciudad sin provincia
+La ciudad debe pertenecer a la provincia seleccionada
+Mensaje de error: "La ciudad no pertenece a la provincia seleccionada"
+
+Flujo de Selección:
+Dropdown de ciudades se habilita solo después de seleccionar provincia
+Las ciudades se cargan dinámicamente según provincia seleccionada
+
+
 # MiAppCRUD
 
 Descripción del funcionamiento del login
@@ -27,3 +69,5 @@ Este enfoque también permite mantener la sesión abierta mientras el usuario no
 
 Recomendaciones
 Se recomienda que los usuarios elijan contraseñas seguras y únicas para evitar vulnerabilidades. También se sugiere implementar la verificación por correo electrónico o autenticación multifactor en futuras versiones para aumentar aún más la seguridad del sistema.
+
+
