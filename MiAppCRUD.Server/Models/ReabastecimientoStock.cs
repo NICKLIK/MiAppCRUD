@@ -25,7 +25,7 @@ namespace MiAppCRUD.Server.Models
         public DateTime FechaEntrega { get; set; }
 
         [Column(TypeName = "timestamp with time zone")]
-        public DateTime FechaSolicitud { get; set; } // ya no pongas `.UtcNow` por defecto
+        public DateTime FechaSolicitud { get; set; } 
 
 
     }

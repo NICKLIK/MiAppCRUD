@@ -21,7 +21,7 @@ namespace MiAppCRUD.Server.Controllers
             var categorias = await _categoriaService.GetCategorias();
             var resultado = categorias.Select(c => new CategoriaProductoDto
             {
-                Id = c.Id,             // ✅ Incluye el ID
+                Id = c.Id,             
                 Nombre = c.Nombre
             }).ToList();
 
@@ -36,7 +36,7 @@ namespace MiAppCRUD.Server.Controllers
             return Ok(categoria);
         }
 
-        // ✅ POST: usa DTO para crear categoría
+       
         [HttpPost]
         public async Task<ActionResult<CategoriaProducto>> CreateCategoria([FromBody] CategoriaProductoDto dto)
         {
@@ -53,7 +53,7 @@ namespace MiAppCRUD.Server.Controllers
             return CreatedAtAction(nameof(GetCategoriaById), new { id = nueva.Id }, nueva);
         }
 
-        // ✅ PUT: usa DTO también para actualizar
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategoria(int id, [FromBody] CategoriaProductoDto dto)
         {

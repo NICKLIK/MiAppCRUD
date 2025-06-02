@@ -10,6 +10,7 @@ function GestionAdmin() {
             <div className="gestion-admin-botones">
                 <button onClick={() => navigate("/usuarios")}>Gestionar Usuarios</button>
                 <button onClick={() => navigate("/catalogo-admin")}>Gestionar Catalogo de Productos</button>
+                <button onClick={() => navigate("/historial-ventas")}>Historial de Ventas</button>
             </div>
         </div>
     );

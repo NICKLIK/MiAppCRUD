@@ -92,5 +92,22 @@ namespace MiAppCRUD.Server.Controllers
 
             return NoContent();
         }
+
+        [HttpPut("descontar-stock/{id}")]
+        public async Task<IActionResult> DescontarStock(int id, [FromQuery] int cantidad)
+        {
+            var producto = await _productoService.GetProductoEntityById(id);
+            if (producto == null)
+                return NotFound();
+
+            if (producto.Stock < cantidad)
+                return BadRequest(new { mensaje = "Stock insuficiente para descontar." });
+
+            producto.Stock -= cantidad;
+            await _productoService.GuardarCambios();
+
+            return Ok(new { mensaje = "Stock actualizado exitosamente." });
+        }
+
     }
 }

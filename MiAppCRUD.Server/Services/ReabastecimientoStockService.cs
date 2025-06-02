@@ -15,10 +15,37 @@ namespace MiAppCRUD.Server.Services
 
         public async Task<List<ReabastecimientoStock>> ObtenerTodos()
         {
-            return await _context.ReabastecimientosStock
+            var hoy = DateTime.UtcNow.Date;
+
+            var solicitudes = await _context.ReabastecimientosStock
                 .Include(r => r.Producto)
                 .ToListAsync();
+
+            var cambios = false;
+
+            foreach (var solicitud in solicitudes)
+            {
+                if (solicitud.Estado == "En proceso" && solicitud.FechaEntrega.Date <= hoy)
+                {
+                    var producto = solicitud.Producto;
+
+                    if (producto != null)
+                    {
+                        producto.Stock += solicitud.Cantidad;
+                        solicitud.Estado = "Finalizado";
+                        cambios = true;
+                    }
+                }
+            }
+
+            if (cambios)
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            return solicitudes;
         }
+
 
         public async Task<ReabastecimientoStock> ObtenerPorId(int id)
         {
@@ -46,10 +73,10 @@ namespace MiAppCRUD.Server.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ ERROR al guardar solicitud:");
+                Console.WriteLine("ERROR al guardar solicitud:");
                 Console.WriteLine(ex.Message);
                 if (ex.InnerException != null)
-                    Console.WriteLine("👉 Inner: " + ex.InnerException.Message);
+                    Console.WriteLine("Inner: " + ex.InnerException.Message);
                 throw;
             }
         }
@@ -63,7 +90,7 @@ namespace MiAppCRUD.Server.Services
             existente.ProductoId = dto.ProductoId;
             existente.Cantidad = dto.Cantidad;
             existente.FechaEntrega = DateTime.SpecifyKind(dto.FechaEntrega, DateTimeKind.Utc);
-            // Estado no se actualiza desde el frontend, se controla internamente
+            
 
             await _context.SaveChangesAsync();
             return existente;

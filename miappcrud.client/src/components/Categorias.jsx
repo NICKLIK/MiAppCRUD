@@ -10,7 +10,7 @@ function Categorias() {
         try {
             const response = await fetch("https://localhost:52291/api/categoriaproducto");
             const data = await response.json();
-            // Filtra categorías inválidas con id 0 o nulo
+            
             const filtradas = data.filter(c => c.id && c.id !== 0);
             setCategorias(filtradas);
         } catch (error) {

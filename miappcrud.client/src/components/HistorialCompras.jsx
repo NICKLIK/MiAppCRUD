@@ -21,11 +21,11 @@ function HistorialCompras() {
         const compra = compraSeleccionada;
         let y = 20;
 
-        // Título
+        
         doc.text("Resumen de la Compra", 20, y);
         y += 10;
 
-        // Info del usuario
+        
         const perfil = JSON.parse(localStorage.getItem(`perfilUsuario_${correoUsuario}`));
         if (perfil) {
             doc.setFontSize(12);
@@ -35,7 +35,7 @@ function HistorialCompras() {
             doc.text(`Ciudad: ${perfil.ciudad}`, 20, y); y += 10;
         }
 
-        // Datos de la compra
+       
         doc.setFontSize(12);
         doc.text(`Fecha: ${compra.fecha}`, 20, y); y += 8;
         doc.text(`Método de Pago: ${compra.metodoPago}`, 20, y); y += 8;

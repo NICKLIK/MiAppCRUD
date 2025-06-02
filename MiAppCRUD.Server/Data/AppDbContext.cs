@@ -18,7 +18,7 @@ namespace MiAppCRUD.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuración general para PostgreSQL (nombres de tabla y strings)
+           
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
                 entity.SetTableName(entity.GetTableName().ToLower());
@@ -33,7 +33,7 @@ namespace MiAppCRUD.Server.Data
                 }
             }
 
-            // Configuración para Usuario
+           
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.Property(u => u.Nombre).HasColumnType("varchar(50)").IsRequired();
@@ -48,7 +48,7 @@ namespace MiAppCRUD.Server.Data
                 entity.HasIndex(u => u.Correo).IsUnique();
             });
 
-            // Configuración para Producto
+            
             modelBuilder.Entity<Producto>(entity =>
             {
                 entity.Property(p => p.Nombre).HasColumnType("varchar(100)").IsRequired();
@@ -64,7 +64,7 @@ namespace MiAppCRUD.Server.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Configuración para ClaveAdmin
+           
             modelBuilder.Entity<ClaveAdmin>(entity =>
             {
                 entity.Property(c => c.Correo).HasColumnType("varchar(100)").IsRequired();
@@ -74,19 +74,19 @@ namespace MiAppCRUD.Server.Data
                 entity.HasIndex(c => c.Clave).IsUnique();
             });
 
-            // Configuración para CategoriaProducto
+           
             modelBuilder.Entity<CategoriaProducto>(entity =>
             {
                 entity.Property(c => c.Nombre).HasColumnType("varchar(100)").IsRequired();
             });
 
-            // ✅ Configuración para ReabastecimientoStock
+           
             modelBuilder.Entity<ReabastecimientoStock>(entity =>
             {
                 entity.Property(r => r.Estado).HasColumnType("varchar(50)").IsRequired();
                 entity.Property(r => r.Cantidad).IsRequired();
 
-                // ✅ Ambos con timestamp with time zone
+                
                 entity.Property(r => r.FechaSolicitud)
                     .HasColumnType("timestamptz")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");

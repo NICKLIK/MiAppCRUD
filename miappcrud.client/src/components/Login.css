@@ -5,7 +5,7 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Cambiado a flex-start para mejor scroll */
+    align-items: flex-start; 
     padding: 20px;
     box-sizing: border-box;
 }
@@ -17,7 +17,7 @@ body {
     border-radius: 20px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     padding: 30px;
-    margin: 40px 0; /* Espacio arriba y abajo */
+    margin: 40px 0; 
     box-sizing: border-box;
 }
 
@@ -115,7 +115,7 @@ body {
     font-weight: 500;
 }
 
-/* Estilos para select */
+
 select.login-input {
     appearance: none;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -125,12 +125,12 @@ select.login-input {
     padding-right: 35px;
 }
 
-/* Scroll suave */
+
 html {
     scroll-behavior: smooth;
 }
 
-/* Responsive */
+
 @media (max-width: 600px) {
     body {
         padding: 15px;

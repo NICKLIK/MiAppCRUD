@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './Productos.css';  // Agrega el archivo CSS para los estilos
+import './Productos.css';  
 
 function Productos() {
     const [productos, setProductos] = useState([]);
 
     useEffect(() => {
-        // Hacer la solicitud GET a la API de productos
+        
         fetch('https://localhost:52291/api/producto')
             .then((response) => response.json())
             .then((data) => setProductos(data))

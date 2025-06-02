@@ -50,7 +50,7 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target,       // Cambié la ruta para capturar /api
+                target,       
                 changeOrigin: true,
                 secure: false
             },

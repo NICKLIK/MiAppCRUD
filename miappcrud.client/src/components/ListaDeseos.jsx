@@ -6,7 +6,7 @@ function ListaDeseos() {
     const navigate = useNavigate();
     const correoUsuario = localStorage.getItem("usuario");
     const [productos, setProductos] = useState([]);
-    const [stockGlobal, setStockGlobal] = useState({}); // Para mostrar el stock actualizado real
+    const [stockGlobal, setStockGlobal] = useState({}); 
 
     useEffect(() => {
         if (!correoUsuario) {
@@ -59,7 +59,7 @@ function ListaDeseos() {
 
         localStorage.setItem(keyCarrito, JSON.stringify(carrito));
 
-        // Eliminar de lista de deseos
+        
         eliminarProducto(producto.id);
         alert("Producto añadido al carrito.");
     };

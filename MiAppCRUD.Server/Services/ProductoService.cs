@@ -15,7 +15,31 @@ namespace MiAppCRUD.Server.Services
 
         public async Task<List<ProductoRespuestaDto>> GetProductos()
         {
+            var hoy = DateTime.UtcNow;
+
+            // Traer productos + categorías
             var productos = await _context.Productos.Include(p => p.Categoria).ToListAsync();
+
+            // Traer reabastecimientos "en proceso" cuya fecha ya pasó
+            var reabastecimientosPendientes = await _context.ReabastecimientosStock
+                .Where(r => r.Estado == "En proceso" && r.FechaEntrega <= hoy)
+                .ToListAsync();
+
+            foreach (var r in reabastecimientosPendientes)
+            {
+                var producto = productos.FirstOrDefault(p => p.Id == r.ProductoId);
+                if (producto != null)
+                {
+                    producto.Stock += r.Cantidad;
+                    r.Estado = "Finalizado";
+                }
+            }
+
+            // Guardar cambios en la BD si hubo modificaciones
+            if (reabastecimientosPendientes.Any())
+            {
+                await _context.SaveChangesAsync();
+            }
 
             return productos.Select(p => new ProductoRespuestaDto
             {
@@ -30,6 +54,7 @@ namespace MiAppCRUD.Server.Services
                 CategoriaNombre = p.Categoria?.Nombre
             }).ToList();
         }
+
 
         public async Task<ProductoRespuestaDto?> GetProductoById(int id)
         {
@@ -119,5 +144,17 @@ namespace MiAppCRUD.Server.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<Producto?> GetProductoEntityById(int id)
+        {
+            return await _context.Productos.FindAsync(id);
+        }
+
+        public async Task GuardarCambios()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
+
 }

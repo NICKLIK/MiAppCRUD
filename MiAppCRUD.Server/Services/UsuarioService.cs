@@ -31,20 +31,20 @@ namespace MiAppCRUD.Server.Services
             if (!UbicacionHelper.ValidarCiudadProvincia(usuario.Provincia, usuario.Ciudad))
                 throw new Exception("La ciudad no pertenece a la provincia seleccionada");
 
-            // Comprobación para determinar si es admin
+            
             bool esAdmin = usuario.Correo.ToLower().EndsWith("@admin.com");
 
             if (esAdmin)
             {
-                // Generar clave única aleatoria
+                
                 string nuevaClave = Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
 
-                // Crear y asociar clave al correo del admin
+                
                 var claveAdminGenerada = new ClaveAdmin
                 {
                     Correo = usuario.Correo,
                     Clave = nuevaClave,
-                    Usada = true // se marca como activa y lista para usar
+                    Usada = true 
                 };
 
                 _context.ClavesAdmin.Add(claveAdminGenerada);
@@ -55,7 +55,7 @@ namespace MiAppCRUD.Server.Services
                 usuario.Rol = "USUARIO";
             }
 
-            // usuario.Contrasena = MD5Helper.EncriptarMD5(usuario.Contrasena);
+            
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
             return usuario;
@@ -89,7 +89,7 @@ namespace MiAppCRUD.Server.Services
             var usuarioExistente = await _context.Usuarios.FindAsync(id);
             if (usuarioExistente == null) return null;
 
-            // Validación de correo existente (Back-End)
+            
             if (usuarioExistente.Correo != usuario.Correo)
             {
                 var correoExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == usuario.Correo);
@@ -97,7 +97,7 @@ namespace MiAppCRUD.Server.Services
                     throw new Exception("El correo electrónico ya está registrado");
             }
 
-            // Validación de ubicación
+            
             if (!UbicacionHelper.ValidarCiudadProvincia(usuario.Provincia, usuario.Ciudad))
                 throw new Exception("La ciudad no pertenece a la provincia seleccionada");
 
@@ -125,13 +125,13 @@ namespace MiAppCRUD.Server.Services
             return usuario;
         }
 
-        // Nuevo método para obtener provincias
+        
         public List<string> GetProvincias()
         {
             return UbicacionHelper.ProvinciaCiudades.Keys.ToList();
         }
             
-        // Nuevo método para obtener ciudades por provincia
+        
         public List<string> GetCiudadesPorProvincia(string provincia)
         {
             if (UbicacionHelper.ProvinciaCiudades.ContainsKey(provincia))

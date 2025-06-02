@@ -9,7 +9,6 @@ function ProductosAdmin() {
         nombre: "",
         descripcion: "",
         precio: "",
-        stock: "",
         imagenUrl: "",
         ecuniPoints: "",
         categoriaProductoId: ""
@@ -19,27 +18,39 @@ function ProductosAdmin() {
     useEffect(() => {
         cargarProductos();
         cargarCategorias();
+
+        const intervalo = setInterval(() => {
+            cargarProductos();
+        }, 5000);
+
+        return () => clearInterval(intervalo);
     }, []);
 
     const cargarProductos = async () => {
-        const res = await fetch("https://localhost:52291/api/producto");
-        const data = await res.json();
-        setProductos(data);
+        try {
+            const res = await fetch("https://localhost:52291/api/producto");
+            const data = await res.json();
+            setProductos(data);
+        } catch (err) {
+            console.error("Error al cargar productos:", err);
+        }
     };
 
     const cargarCategorias = async () => {
-        const res = await fetch("https://localhost:52291/api/categoriaproducto");
-        const data = await res.json();
-        // Filtramos categorías inválidas (id 0 o null)
-        const filtradas = data.filter(c => c.id && c.id !== 0);
-        setCategorias(filtradas);
+        try {
+            const res = await fetch("https://localhost:52291/api/categoriaproducto");
+            const data = await res.json();
+            const filtradas = data.filter(c => c.id && c.id !== 0);
+            setCategorias(filtradas);
+        } catch (err) {
+            console.error("Error al cargar categorías:", err);
+        }
     };
 
     const manejarCambio = (e) => {
         const { name, value } = e.target;
         const valorConvertido =
             name === "categoriaProductoId" ||
-                name === "stock" ||
                 name === "precio" ||
                 name === "ecuniPoints"
                 ? Number(value)
@@ -58,12 +69,12 @@ function ProductosAdmin() {
         const metodo = modoEdicion ? "PUT" : "POST";
 
         const bodyData = modoEdicion
-            ? { ...formulario } // incluye ID
+            ? { ...formulario }
             : {
                 nombre: formulario.nombre,
                 descripcion: formulario.descripcion,
                 precio: formulario.precio,
-                stock: formulario.stock,
+                stock: 0, // nuevo producto empieza con 0 stock
                 imagenUrl: formulario.imagenUrl,
                 ecuniPoints: formulario.ecuniPoints,
                 categoriaProductoId: formulario.categoriaProductoId
@@ -98,7 +109,6 @@ function ProductosAdmin() {
                 nombre: "",
                 descripcion: "",
                 precio: "",
-                stock: "",
                 imagenUrl: "",
                 ecuniPoints: "",
                 categoriaProductoId: ""
@@ -110,14 +120,12 @@ function ProductosAdmin() {
         }
     };
 
-
     const manejarEditar = (producto) => {
         setFormulario({
             id: producto.id,
             nombre: producto.nombre,
             descripcion: producto.descripcion,
             precio: producto.precio,
-            stock: producto.stock,
             imagenUrl: producto.imagenUrl,
             ecuniPoints: producto.ecuniPoints,
             categoriaProductoId: producto.categoriaProductoId
@@ -139,7 +147,6 @@ function ProductosAdmin() {
                 <input name="nombre" value={formulario.nombre} onChange={manejarCambio} placeholder="Nombre" required />
                 <textarea name="descripcion" value={formulario.descripcion} onChange={manejarCambio} placeholder="Descripción" />
                 <input name="precio" type="number" value={formulario.precio} onChange={manejarCambio} placeholder="Precio" required />
-                <input name="stock" type="number" value={formulario.stock} onChange={manejarCambio} placeholder="Stock" required />
                 <input name="imagenUrl" value={formulario.imagenUrl} onChange={manejarCambio} placeholder="URL de la imagen" />
                 <input name="ecuniPoints" type="number" value={formulario.ecuniPoints} onChange={manejarCambio} placeholder="EcuniPoints" required />
 
@@ -156,7 +163,11 @@ function ProductosAdmin() {
             <div className="productos-list">
                 {productos.map((p) => (
                     <div key={p.id} className="producto-card">
-                        <img src={p.imagenUrl} alt={p.nombre} className="producto-img" />
+                        <img
+                            src={p.imagenUrl || "https://dummyimage.com/150x150/cccccc/000000&text=Sin+Imagen"}
+                            alt={p.nombre}
+                            className="producto-img"
+                        />
                         <h3>{p.nombre}</h3>
                         <p>{p.descripcion}</p>
                         <p><strong>Precio:</strong> ${p.precio}</p>

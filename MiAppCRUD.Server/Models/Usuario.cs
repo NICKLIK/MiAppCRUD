@@ -46,7 +46,7 @@ namespace MiAppCRUD.Server.Models
 
         [Required]
         [Column(TypeName = "varchar(20)")]
-        public string Rol { get; set; } = "Usuario";  // Por defecto "Usuario", puede ser "Admin"
+        public string Rol { get; set; } = "Usuario";  
 
     }
 }

@@ -57,10 +57,21 @@ function CarritoCompras() {
         setProductoAEliminar(null);
     };
 
-    const totalPrecio = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
-    const totalPuntos = carrito.reduce((acc, p) => acc + p.ecuniPoints * p.cantidad, 0);
+    const descontarStockBackend = async (idProducto, cantidad) => {
+        try {
+            const res = await fetch(`https://localhost:52291/api/producto/descontar-stock/${idProducto}?cantidad=${cantidad}`, {
+                method: "PUT"
+            });
+            if (!res.ok) {
+                const mensaje = await res.text();
+                console.warn(`Error al descontar stock del producto ${idProducto}: ${mensaje}`);
+            }
+        } catch (error) {
+            console.error("Error al llamar al backend para descontar stock:", error);
+        }
+    };
 
-    const procesarPago = (metodo) => {
+    const procesarPago = async (metodo) => {
         if (carrito.length === 0) {
             alert("El carrito está vacío.");
             return;
@@ -88,6 +99,16 @@ function CarritoCompras() {
             registrarMovimiento("EGRESO", totalPuntos, "ecuniPoints");
         }
 
+        const stockActualizado = JSON.parse(localStorage.getItem("stock_actualizado")) || {};
+
+        for (const p of carrito) {
+            const stockAnterior = stockActualizado[p.id] ?? p.stock;
+            const nuevoStock = stockAnterior - p.cantidad;
+            stockActualizado[p.id] = nuevoStock;
+            await descontarStockBackend(p.id, p.cantidad);
+        }
+
+        localStorage.setItem("stock_actualizado", JSON.stringify(stockActualizado));
         localStorage.setItem(`fondos_${correoUsuario}`, JSON.stringify(nuevosFondos));
         setFondos(nuevosFondos);
         localStorage.removeItem(`carritoCompras_${correoUsuario}`);
@@ -109,6 +130,9 @@ function CarritoCompras() {
         setResumenCompra(compra);
         setMostrarPago(false);
     };
+
+    const totalPrecio = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+    const totalPuntos = carrito.reduce((acc, p) => acc + p.ecuniPoints * p.cantidad, 0);
 
     const generarPDF = () => {
         if (!resumenCompra) return;

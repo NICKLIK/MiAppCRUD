@@ -16,7 +16,7 @@ namespace MiAppCRUD.Server.Services
         public async Task<List<CategoriaProducto>> GetCategorias()
         {
             return await _context.CategoriasProducto
-                                 .AsNoTracking() // más eficiente
+                                 .AsNoTracking() 
                                  .ToListAsync();
         }
 

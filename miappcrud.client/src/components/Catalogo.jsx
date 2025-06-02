@@ -70,12 +70,14 @@ function Catalogo() {
 
             const carrito = JSON.parse(localStorage.getItem(`carritoCompras_${correoUsuario}`)) || [];
             const listaDeseos = JSON.parse(localStorage.getItem(`listaDeseos_${correoUsuario}`)) || [];
+           // const stockActualizado = JSON.parse(localStorage.getItem("stock_actualizado")) || {};
 
             const productosAjustados = data.map(prod => {
                 const enCarrito = carrito.find(p => p.id === prod.id);
                 const enDeseos = listaDeseos.find(p => p.id === prod.id);
                 const cantidadOcupada = (enCarrito?.cantidad || 0) + (enDeseos?.cantidad || 0);
-                return { ...prod, stock: prod.stock - cantidadOcupada };
+                const stockBase = prod.stock;
+                return { ...prod, stock: stockBase - cantidadOcupada };
             });
 
             setProductos(productosAjustados);
@@ -240,7 +242,11 @@ function Catalogo() {
             {productoSeleccionado && (
                 <div className="modal-overlay" onClick={cerrarDetalle}>
                     <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>
-                        <img src={productoSeleccionado.imagenUrl} alt={productoSeleccionado.nombre} className="producto-img-detalle" />
+                        <img
+                            src={productoSeleccionado.imagenUrl || "https://dummyimage.com/150x150/cccccc/000000&text=Sin+Imagen"}
+                            alt={productoSeleccionado.nombre}
+                            className="producto-img"
+                        />
                         <h2>{productoSeleccionado.nombre}</h2>
                         <p><strong>Descripcion:</strong> {productoSeleccionado.descripcion}</p>
                         <p><strong>Precio:</strong> ${productoSeleccionado.precio}</p>

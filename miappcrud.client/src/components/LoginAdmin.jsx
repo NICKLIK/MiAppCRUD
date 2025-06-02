@@ -47,7 +47,7 @@ function LoginAdmin({ setEstaLogueado }) {
                 throw new Error(errorMessage);
             }
 
-            // Manejar respuesta segura (en caso de que esté vacía)
+            
             const text = await response.text();
             const data = text ? JSON.parse(text) : {};
 
