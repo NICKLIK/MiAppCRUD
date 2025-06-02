@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MiAppCRUD.Server.Helpers;
 using MiAppCRUD.Server.Models;
 using MiAppCRUD.Server.Services;
-using MiAppCRUD.Server.Helpers;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MiAppCRUD.Server.Controllers
 {
@@ -25,7 +24,7 @@ namespace MiAppCRUD.Server.Controllers
             return Ok(usuarios);
         }
 
-        
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
@@ -37,40 +36,39 @@ namespace MiAppCRUD.Server.Controllers
             return Ok(usuario);
         }
 
-        
+
         [HttpPost("register")]
-        public async Task<ActionResult<Usuario>> Register(Usuario usuario)
+        public async Task<ActionResult> Register([FromBody] Usuario usuario)
         {
             try
             {
-                
-                if (!UbicacionHelper.ValidarCiudadProvincia(usuario.Provincia, usuario.Ciudad))
+                var nuevoUsuario = await _usuarioService.CrearUsuario(usuario);
+
+                if (nuevoUsuario.Rol == "ADMIN")
                 {
-                    return BadRequest("La ciudad no pertenece a la provincia seleccionada");
+                    var clave = await _usuarioService.ObtenerClaveAdminPorCorreo(nuevoUsuario.Correo);
+                    return Ok(new { mensaje = "Registro exitoso", claveAdmin = clave });
                 }
 
-                var nuevoUsuario = await _usuarioService.CrearUsuario(usuario);
-                return CreatedAtAction(nameof(GetUsuario), new { id = nuevoUsuario.Id }, nuevoUsuario);
+                return Ok(new { mensaje = "Registro exitoso" });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { mensaje = ex.Message });
             }
         }
 
-        
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Usuario usuario)
+        public async Task<IActionResult> Login([FromBody] CredencialesDto credenciales)
         {
             try
             {
-                bool loginExitoso = await _usuarioService.VerificarLogin(usuario.Correo, usuario.Contrasena);
+                bool loginExitoso = await _usuarioService.VerificarLogin(credenciales.Correo, credenciales.Contrasena);
                 if (!loginExitoso)
                 {
                     return Unauthorized("Credenciales incorrectas");
                 }
 
-                
                 return Ok(new { mensaje = "Inicio de sesión exitoso" });
             }
             catch (Exception ex)
@@ -79,13 +77,15 @@ namespace MiAppCRUD.Server.Controllers
             }
         }
 
-        
+
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUsuario(int id, Usuario usuario)
         {
             try
             {
-                
+
                 if (!UbicacionHelper.ValidarCiudadProvincia(usuario.Provincia, usuario.Ciudad))
                 {
                     return BadRequest("La ciudad no pertenece a la provincia seleccionada");
@@ -104,7 +104,7 @@ namespace MiAppCRUD.Server.Controllers
             }
         }
 
-        
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
@@ -116,7 +116,7 @@ namespace MiAppCRUD.Server.Controllers
             return NoContent();
         }
 
-        
+
         [HttpGet("provincias")]
         public ActionResult<List<string>> GetProvincias()
         {
@@ -124,7 +124,7 @@ namespace MiAppCRUD.Server.Controllers
             return Ok(provincias);
         }
 
-        
+
         [HttpGet("ciudades/{provincia}")]
         public ActionResult<List<string>> GetCiudades(string provincia)
         {
@@ -136,12 +136,29 @@ namespace MiAppCRUD.Server.Controllers
             return Ok(ciudades);
         }
 
-         
+
         [HttpGet("validar-correo/{correo}")]
         public async Task<ActionResult<bool>> ValidarCorreo(string correo)
         {
             var existe = await _usuarioService.GetUsuarioByCorreo(correo);
             return Ok(existe == null);
         }
+
+
+        [HttpPost("login-admin")]
+        public async Task<IActionResult> LoginAdmin([FromBody] LoginAdminRequest request)
+        {
+            var usuario = await _usuarioService.ObtenerUsuarioAdmin(request.Correo, request.Contrasena, request.ClaveAdmin);
+            if (usuario == null)
+                return Unauthorized(new { message = "Credenciales o clave incorrectas" });
+
+            return Ok(new
+            {
+                correo = usuario.Correo,
+                rol = usuario.Rol
+            });
+        }
+
+
     }
 }

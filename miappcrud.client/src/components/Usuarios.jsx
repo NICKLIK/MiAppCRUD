@@ -28,7 +28,7 @@ function Usuarios() {
 
     return (
         <div className="usuarios-container">
-            <h1>Información de los Usuarios Registrados</h1>
+            <h1>Informacion de los Usuarios Registrados</h1>
             <div className="usuarios-list">
                 {usuarios.map((u) => (
                     <div key={u.id} className="usuario-item">
@@ -36,8 +36,8 @@ function Usuarios() {
                             <h3>{u.nombre} {u.apellido}</h3>
                             <p><strong>Correo:</strong> {u.correo}</p>
                             <p><strong>Edad:</strong> {u.edad}</p>
-                            <p><strong>Género:</strong> {u.genero}</p>
-                            <p><strong>Ubicación:</strong> {u.ciudad}, {u.provincia}</p>
+                            <p><strong>Genero:</strong> {u.genero}</p>
+                            <p><strong>Ubicacion:</strong> {u.ciudad}, {u.provincia}</p>
                         </div>
                         <button
                             className="eliminar-button"
@@ -45,12 +45,21 @@ function Usuarios() {
                         >
                             Eliminar
                         </button>
+
+                        <button
+                            className="ver-button"
+                            onClick={() => navigate(`/usuarios/${u.id}`)}
+                        >
+                            Ver
+                        </button>
+
                     </div>
                 ))}
             </div>
             <button className="logout-button" onClick={cerrarSesion}>
-                Cerrar sesión
+                Cerrar sesion
             </button>
+
         </div>
     );
 }

@@ -28,13 +28,16 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
         '--format',
         'Pem',
         '--no-password',
-    ], { stdio: 'inherit', }).status) {
+    ], { stdio: 'inherit' }).status) {
         throw new Error("Could not create certificate.");
     }
 }
 
-const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:5270';
+const target = env.ASPNETCORE_HTTPS_PORT
+    ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
+    : env.ASPNETCORE_URLS
+        ? env.ASPNETCORE_URLS.split(';')[0]
+        : 'http://localhost:5270';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -48,8 +51,8 @@ export default defineConfig({
         proxy: {
             '/api': {
                 target,       // Cambié la ruta para capturar /api
-                changeOrigin: true, // Esto puede ayudar con el CORS si es necesario
-                secure: false // Cambia a true si estás trabajando con https en el backend
+                changeOrigin: true,
+                secure: false
             },
             '^/weatherforecast': {
                 target,
@@ -62,4 +65,4 @@ export default defineConfig({
             cert: fs.readFileSync(certFilePath),
         }
     }
-})
+});

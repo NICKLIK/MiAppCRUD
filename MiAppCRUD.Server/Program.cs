@@ -18,6 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Servicios de la aplicación
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProductoService>();
+builder.Services.AddScoped<CategoriaProductoService>();
+builder.Services.AddScoped<ReabastecimientoStockService>();
 
 // Configuración para las vistas y Razor Pages
 builder.Services.AddControllersWithViews();
@@ -26,6 +28,7 @@ builder.Services.AddRazorPages();
 // Configuración de Swagger para la API (solo en desarrollo)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHostedService<VerificadorReabastecimientoService>();
 
 var app = builder.Build();
 

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import CryptoJS from "crypto-js";
 import "./Login.css";
 
 function Login({ setEstaLogueado }) {
@@ -21,8 +20,6 @@ function Login({ setEstaLogueado }) {
     const [error, setError] = useState('');
     const [cargandoProvincias, setCargandoProvincias] = useState(false);
     const navigate = useNavigate();
-
-    const encriptarMD5 = (str) => CryptoJS.MD5(str).toString().toUpperCase();
 
     useEffect(() => {
         const cargarProvincias = async () => {
@@ -82,7 +79,7 @@ function Login({ setEstaLogueado }) {
             return false;
         }
 
-        if (!validarContrasena(formData.contrasena)) {
+        if (esRegistro && !validarContrasena(formData.contrasena)) {
             setError("La contrasena debe tener al menos 8 caracteres, una mayuscula y un simbolo");
             return false;
         }
@@ -102,15 +99,18 @@ function Login({ setEstaLogueado }) {
     };
 
     const iniciarSesion = async () => {
-        if (!validarFormulario()) return;
+        if (!formData.correo || !formData.contrasena) {
+            setError("Debe ingresar correo y contrasena");
+            return;
+        }
 
         try {
             const response = await fetch("https://localhost:52291/api/usuario/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    correo: formData.correo,
-                    contrasena: encriptarMD5(formData.contrasena)
+                    correo: formData.correo.trim(),
+                    contrasena: formData.contrasena.trim()
                 }),
             });
 
@@ -121,7 +121,7 @@ function Login({ setEstaLogueado }) {
 
             localStorage.setItem("usuario", formData.correo);
             setEstaLogueado(true);
-            navigate("/usuarios");
+            navigate("/gestion-usuario");
         } catch (err) {
             setError(err.message);
         }
@@ -148,12 +148,18 @@ function Login({ setEstaLogueado }) {
                 body: JSON.stringify(usuario),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Error al registrar");
+                throw new Error(data.mensaje || "Error al registrar");
             }
 
-            alert("¡Registro exitoso! Ahora puedes iniciar sesion.");
+            if (data.claveAdmin) {
+                alert(`¡Registro exitoso!\nTu clave de administrador es: ${data.claveAdmin}\nGuardala bien, la necesitaras para iniciar sesion como admin.`);
+            } else {
+                alert("¡Registro exitoso! Ahora puedes iniciar sesion.");
+            }
+
             setEsRegistro(false);
             setFormData(prev => ({ ...prev, contrasena: '', confirmarContrasena: '' }));
         } catch (err) {
@@ -164,7 +170,7 @@ function Login({ setEstaLogueado }) {
     return (
         <div className="login-page">
             <div className="login-container">
-                <h1 className="login-title">{esRegistro ? "Registro de Usuario" : "Inicio de Sesion"}</h1>
+                <h1 className="login-title">{esRegistro ? "Registro de Usuario" : "Inicio de Sesión"}</h1>
 
                 <div className="login-form-box">
                     {error && <div className="error-message">{error}</div>}
@@ -173,87 +179,37 @@ function Login({ setEstaLogueado }) {
                         <>
                             <div className="form-group">
                                 <label>Nombre</label>
-                                <input
-                                    className="login-input"
-                                    name="nombre"
-                                    value={formData.nombre}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                <input className="login-input" name="nombre" value={formData.nombre} onChange={handleChange} required />
                             </div>
-
                             <div className="form-group">
                                 <label>Apellido</label>
-                                <input
-                                    className="login-input"
-                                    name="apellido"
-                                    value={formData.apellido}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                <input className="login-input" name="apellido" value={formData.apellido} onChange={handleChange} required />
                             </div>
-
                             <div className="form-group">
                                 <label>Edad</label>
-                                <input
-                                    className="login-input"
-                                    name="edad"
-                                    type="number"
-                                    min="1"
-                                    max="120"
-                                    value={formData.edad}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                <input className="login-input" name="edad" type="number" min="1" max="120" value={formData.edad} onChange={handleChange} required />
                             </div>
-
                             <div className="form-group">
-                                <label>Genero</label>
-                                <select
-                                    className="login-input"
-                                    name="genero"
-                                    value={formData.genero}
-                                    onChange={handleChange}
-                                    required
-                                >
+                                <label>Género</label>
+                                <select className="login-input" name="genero" value={formData.genero} onChange={handleChange} required>
                                     <option value="">Seleccione genero</option>
                                     <option value="Masculino">Masculino</option>
                                     <option value="Femenino">Femenino</option>
                                     <option value="Otro">Otro</option>
                                 </select>
                             </div>
-
                             <div className="form-group">
                                 <label>Provincia</label>
-                                <select
-                                    className="login-input"
-                                    name="provincia"
-                                    value={formData.provincia}
-                                    onChange={handleChange}
-                                    required
-                                    disabled={cargandoProvincias}
-                                >
+                                <select className="login-input" name="provincia" value={formData.provincia} onChange={handleChange} required disabled={cargandoProvincias}>
                                     <option value="">{cargandoProvincias ? "Cargando..." : "Seleccione provincia"}</option>
-                                    {provincias.map(provincia => (
-                                        <option key={provincia} value={provincia}>{provincia}</option>
-                                    ))}
+                                    {provincias.map(p => <option key={p} value={p}>{p}</option>)}
                                 </select>
                             </div>
-
                             <div className="form-group">
                                 <label>Ciudad</label>
-                                <select
-                                    className="login-input"
-                                    name="ciudad"
-                                    value={formData.ciudad}
-                                    onChange={handleChange}
-                                    disabled={!formData.provincia || ciudades.length === 0}
-                                    required
-                                >
+                                <select className="login-input" name="ciudad" value={formData.ciudad} onChange={handleChange} required disabled={!formData.provincia || ciudades.length === 0}>
                                     <option value="">{formData.provincia ? "Seleccione ciudad" : "Primero seleccione provincia"}</option>
-                                    {ciudades.map(ciudad => (
-                                        <option key={ciudad} value={ciudad}>{ciudad}</option>
-                                    ))}
+                                    {ciudades.map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
                         </>
@@ -261,79 +217,34 @@ function Login({ setEstaLogueado }) {
 
                     <div className="form-group">
                         <label>Correo electronico</label>
-                        <input
-                            className="login-input"
-                            name="correo"
-                            type="email"
-                            value={formData.correo}
-                            onChange={handleChange}
-                            required
-                        />
+                        <input className="login-input" name="correo" type="email" value={formData.correo} onChange={handleChange} required />
                     </div>
 
                     <div className="form-group">
                         <label>Contrasena</label>
-                        <input
-                            className="login-input"
-                            name="contrasena"
-                            type="password"
-                            value={formData.contrasena}
-                            onChange={handleChange}
-                            required
-                        />
+                        <input className="login-input" name="contrasena" type="password" value={formData.contrasena} onChange={handleChange} required />
                     </div>
 
                     {esRegistro && (
                         <div className="form-group">
                             <label>Confirmar contrasena</label>
-                            <input
-                                className="login-input"
-                                name="confirmarContrasena"
-                                type="password"
-                                value={formData.confirmarContrasena}
-                                onChange={handleChange}
-                                required
-                            />
+                            <input className="login-input" name="confirmarContrasena" type="password" value={formData.confirmarContrasena} onChange={handleChange} required />
                         </div>
                     )}
 
                     <div className="button-group">
                         {!esRegistro ? (
                             <>
-                                <button
-                                    type="button"
-                                    className="login-button primary"
-                                    onClick={iniciarSesion}
-                                >
-                                    Iniciar sesion
-                                </button>
-                                <button
-                                    type="button"
-                                    className="login-button secondary"
-                                    onClick={() => setEsRegistro(true)}
-                                >
-                                    Registrarse
+                                <button type="button" className="login-button primary" onClick={iniciarSesion}>Iniciar sesion</button>
+                                <button type="button" className="login-button secondary" onClick={() => setEsRegistro(true)}>Registrarse</button>
+                                <button type="button" className="login-button secondary" onClick={() => navigate("/admin-login")}>
+                                    Iniciar sesion como Administrador
                                 </button>
                             </>
                         ) : (
                             <>
-                                <button
-                                    type="button"
-                                    className="login-button primary"
-                                    onClick={registrarse}
-                                >
-                                    Completar registro
-                                </button>
-                                <button
-                                    type="button"
-                                    className="login-button secondary"
-                                    onClick={() => {
-                                        setEsRegistro(false);
-                                        setError('');
-                                    }}
-                                >
-                                    Cancelar
-                                </button>
+                                <button type="button" className="login-button primary" onClick={registrarse}>Completar registro</button>
+                                <button type="button" className="login-button secondary" onClick={() => { setEsRegistro(false); setError(''); }}>Cancelar</button>
                             </>
                         )}
                     </div>

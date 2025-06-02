@@ -22,5 +22,18 @@ namespace MiAppCRUD.Server.Models
 
         [Required]
         public int Stock { get; set; }
+
+        [Column(TypeName = "varchar(200)")]
+        public string ImagenUrl { get; set; }  // Ruta de imagen
+
+        [Required]
+        [Column(TypeName = "numeric(18,2)")]
+        public decimal EcuniPoints { get; set; }
+
+        // Relación con categoría
+        public int CategoriaProductoId { get; set; }
+
+        [ForeignKey("CategoriaProductoId")]
+        public CategoriaProducto Categoria { get; set; }
     }
 }

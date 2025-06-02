@@ -1,0 +1,34 @@
+.gestion-admin-container {
+    padding: 40px;
+    background-color: #f9f9f9;
+    text-align: center;
+    min-height: 100vh;
+}
+
+    .gestion-admin-container h1 {
+        font-size: 2em;
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+.gestion-admin-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+    .gestion-admin-botones button {
+        padding: 15px 25px;
+        font-size: 1.1em;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .gestion-admin-botones button:hover {
+            background-color: #0056b3;
+        }
