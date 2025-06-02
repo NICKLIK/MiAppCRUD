@@ -81,5 +81,5 @@ function UsuarioDetalle() {
         </div>
     );
 }
-
+  
 export default UsuarioDetalle;
