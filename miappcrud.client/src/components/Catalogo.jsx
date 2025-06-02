@@ -223,15 +223,59 @@ function Catalogo() {
             </div>
 
             {productosFiltrados.length > 0 ? (
-                <div className="productos-list">
-                    {productosFiltrados.map((p) => (
-                        <div key={p.id} className="producto-card" onClick={() => setProductoSeleccionado(p)}>
-                            <img src={p.imagenUrl} alt={p.nombre} className="producto-img" />
-                            <h3 className="producto-name">{p.nombre}</h3>
-                            <p className="producto-price">${p.precio}</p>
-                            <p>{p.ecuniPoints} EcuniPoints</p>
+                <div>
+                    {busqueda !== "" ? (
+                        // Si hay filtro por nombre, mostrar todos sin agrupar
+                        <div className="productos-list">
+                            {productosFiltrados.map((p) => (
+                                <div key={p.id} className="producto-card" onClick={() => setProductoSeleccionado(p)}>
+                                    <img src={p.imagenUrl} alt={p.nombre} className="producto-img" />
+                                    <h3 className="producto-name">{p.nombre}</h3>
+                                    <p className="producto-price">${p.precio}</p>
+                                    <p>{p.ecuniPoints} EcuniPoints</p>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    ) : categoriaSeleccionada !== "" ? (
+                        // Si hay filtro por categoría, mostrar solo esa con título
+                        <div>
+                            <h2 style={{ marginLeft: "1rem", marginBottom: "0.5rem" }}>
+                                {categorias.find(cat => cat.id === parseInt(categoriaSeleccionada))?.nombre || "Categoría"}
+                            </h2>
+                            <div className="productos-list">
+                                {productosFiltrados.map((p) => (
+                                    <div key={p.id} className="producto-card" onClick={() => setProductoSeleccionado(p)}>
+                                        <img src={p.imagenUrl} alt={p.nombre} className="producto-img" />
+                                        <h3 className="producto-name">{p.nombre}</h3>
+                                        <p className="producto-price">${p.precio}</p>
+                                        <p>{p.ecuniPoints} EcuniPoints</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        // Vista general agrupada por categorías
+                        categorias.map((categoria) => {
+                            const productosCategoria = productosFiltrados.filter(p => p.categoriaProductoId === categoria.id);
+                            if (productosCategoria.length === 0) return null;
+
+                            return (
+                                <div key={categoria.id}>
+                                    <h2 style={{ marginLeft: "1rem", marginBottom: "0.5rem" }}>{categoria.nombre}</h2>
+                                    <div className="productos-list">
+                                        {productosCategoria.map((p) => (
+                                            <div key={p.id} className="producto-card" onClick={() => setProductoSeleccionado(p)}>
+                                                <img src={p.imagenUrl} alt={p.nombre} className="producto-img" />
+                                                <h3 className="producto-name">{p.nombre}</h3>
+                                                <p className="producto-price">${p.precio}</p>
+                                                <p>{p.ecuniPoints} EcuniPoints</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
                 </div>
             ) : (
                 <p style={{ textAlign: "center", marginTop: "2rem", color: "#888" }}>

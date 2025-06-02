@@ -174,6 +174,11 @@ function CarritoCompras() {
         <div className="productos-container">
             <h1>Carrito de Compras</h1>
 
+            <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+                <h3>Fondos Actuales</h3>
+                <p>Dinero: ${fondos.dinero.toFixed(2)} &nbsp;&nbsp; | &nbsp;&nbsp; EcuniPoints: {fondos.ecuniPoints}</p>
+            </div>
+
             {carrito.length === 0 ? (
                 <p style={{ textAlign: "center", marginTop: "2rem", color: "#888" }}>
                     No hay productos en el carrito.
