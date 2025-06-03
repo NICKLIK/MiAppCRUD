@@ -13,6 +13,8 @@ namespace MiAppCRUD.Server.Data
         public DbSet<ClaveAdmin> ClavesAdmin { get; set; }
         public DbSet<CategoriaProducto> CategoriasProducto { get; set; }
         public DbSet<ReabastecimientoStock> ReabastecimientosStock { get; set; }
+        public DbSet<Evento> Eventos { get; set; }
+        public DbSet<EventoProducto> EventosProductos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -99,6 +101,31 @@ namespace MiAppCRUD.Server.Data
                     .HasForeignKey(r => r.ProductoId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+
+
+            modelBuilder.Entity<Evento>(entity =>
+            {
+                entity.Property(e => e.Nombre).HasColumnType("varchar(100)").IsRequired();
+                entity.Property(e => e.FechaInicio).HasColumnType("timestamptz").IsRequired();
+                entity.Property(e => e.FechaFin).HasColumnType("timestamptz").IsRequired();
+                entity.Property(e => e.DescuentoPorcentaje).HasColumnType("numeric(5,2)");
+            });
+
+            // Configuración para EventoProducto
+            modelBuilder.Entity<EventoProducto>(entity =>
+            {
+                entity.HasOne(ep => ep.Evento)
+                      .WithMany(e => e.Productos)
+                      .HasForeignKey(ep => ep.EventoId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ep => ep.Producto)
+                      .WithMany()
+                      .HasForeignKey(ep => ep.ProductoId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
+
     }
 }

@@ -16,6 +16,7 @@ import ListaDeseos from "./components/ListaDeseos";
 import CarritoCompras from "./components/CarritoCompras";
 import HistorialCompras from "./components/HistorialCompras";
 import HistorialVentas from "./components/HistorialVentas";
+import GestionEventos from "./components/GestionEventos";
 
 import { useState, useEffect } from 'react';
 import './App.css';
@@ -48,6 +49,8 @@ function App() {
                 <Route path="/carrito-compras" element={<CarritoCompras />} />
                 <Route path="/historial-compras" element={<HistorialCompras />} />
                 <Route path="/historial-ventas" element={<HistorialVentas />} />
+                <Route path="/eventos" element={<GestionEventos />} />
+
 
             </Routes>
         </Router>

@@ -20,6 +20,8 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProductoService>();
 builder.Services.AddScoped<CategoriaProductoService>();
 builder.Services.AddScoped<ReabastecimientoStockService>();
+builder.Services.AddScoped<EventoService, EventoServiceImpl>();
+
 
 
 builder.Services.AddControllersWithViews();

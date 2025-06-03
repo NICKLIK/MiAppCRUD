@@ -1,3 +1,4 @@
+// Catalogo.jsx con productos destacados en eventos activos
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Productos.css";
@@ -16,6 +17,8 @@ function Catalogo() {
     const [mostrarIngresoFondos, setMostrarIngresoFondos] = useState(false);
     const [montoIngreso, setMontoIngreso] = useState("");
     const [fondos, setFondos] = useState({ dinero: 0, ecuniPoints: 0 });
+    const [eventosActivos, setEventosActivos] = useState([]);
+    const [productosEvento, setProductosEvento] = useState([]);
 
     const correoUsuario = localStorage.getItem("usuario");
     const navigate = useNavigate();
@@ -25,7 +28,31 @@ function Catalogo() {
         cargarCategorias();
         cargarReservados();
         cargarFondos();
+        cargarEventosActivos();
     }, []);
+
+    const cargarEventosActivos = async () => {
+        try {
+            const response = await fetch("https://localhost:52291/api/evento");
+            const eventos = await response.json();
+            const hoy = new Date();
+
+            const activos = eventos.filter(e => new Date(e.fechaInicio) <= hoy && new Date(e.fechaFin) >= hoy);
+            setEventosActivos(activos);
+
+            const productos = [];
+            activos.forEach(evento => {
+                evento.productos.forEach(rel => {
+                    if (!productos.find(p => p.id === rel.producto.id)) {
+                        productos.push(rel.producto);
+                    }
+                });
+            });
+            setProductosEvento(productos);
+        } catch (error) {
+            console.error("Error al cargar eventos:", error);
+        }
+    };
 
     const cargarFondos = () => {
         const data = JSON.parse(localStorage.getItem(`fondos_${correoUsuario}`)) || { dinero: 0, ecuniPoints: 0 };
@@ -70,7 +97,6 @@ function Catalogo() {
 
             const carrito = JSON.parse(localStorage.getItem(`carritoCompras_${correoUsuario}`)) || [];
             const listaDeseos = JSON.parse(localStorage.getItem(`listaDeseos_${correoUsuario}`)) || [];
-           // const stockActualizado = JSON.parse(localStorage.getItem("stock_actualizado")) || {};
 
             const productosAjustados = data.map(prod => {
                 const enCarrito = carrito.find(p => p.id === prod.id);
@@ -221,6 +247,30 @@ function Catalogo() {
                 <button onClick={aplicarFiltros}>Buscar</button>
                 <button onClick={() => navigate("/carrito-compras")}>Ver Carrito de Compras</button>
             </div>
+
+
+            {productosEvento.length > 0 && (
+                <div>
+
+                    {eventosActivos.length > 0 && (
+                        <h4 style={{ textAlign: "center", color: "gray" }}>
+                            Evento activo: {eventosActivos[0].nombre}
+                        </h4>
+                    )}
+                    <h2 style={{ marginLeft: "1rem", marginTop: "2rem", color: "darkred" }}>Productos en Promoción</h2>
+                    <div className="productos-list">
+                        {productosEvento.map((p) => (
+                            <div key={p.id} className="producto-card" onClick={() => setProductoSeleccionado(p)}>
+                                <img src={p.imagenUrl} alt={p.nombre} className="producto-img" />
+                                <h3 className="producto-name">{p.nombre}</h3>
+                                <p className="producto-price">${p.precio}</p>
+                                <p>{p.ecuniPoints} EcuniPoints</p>
+                                <p style={{ color: "green", fontWeight: "bold" }}>En evento promocional</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {productosFiltrados.length > 0 ? (
                 <div>

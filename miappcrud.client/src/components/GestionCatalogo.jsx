@@ -20,6 +20,13 @@ function GestionCatalogo() {
                     <h3>Reabastecer Stock</h3>
                     <p>Registrar solicitudes para productos agotados o por agotarse.</p>
                 </div>
+
+
+                <div className="producto-card" onClick={() => navigate("/eventos")}>
+                    <h3>Gestionar Eventos</h3>
+                    <p>Gestionar Eventos que se mostraran en el catalogo con sus respectivas categorias o productos.</p>
+                </div>
+
             </div>
         </div>
     );
