@@ -24,22 +24,8 @@ function GestionEventos() {
     };
 
     useEffect(() => {
-        const cargarDatos = async () => {
-            const cat = await fetch("https://localhost:52291/api/evento/categorias-stock-50").then(r => r.json());
-            const prod = await fetch("https://localhost:52291/api/evento/productos-stock-50").then(r => r.json());
-            const evts = await fetch("https://localhost:52291/api/evento").then(r => r.json());
-
-            console.log("Categorias:", cat);
-            console.log("Productos:", prod);
-
-            setCategorias(cat);
-            setProductos(prod);
-            setEventos(evts);
-        };
-
         cargarDatos();
     }, []);
-
 
     const crearEvento = async () => {
         if (!nombre || !fechaInicio || !fechaFin) {
@@ -81,7 +67,7 @@ function GestionEventos() {
             dto.idsProducto = seleccionProductos;
         }
 
-        if (!valido || dto.idsProducto.length === 0) {
+        if (!valido || !dto.idsProducto || dto.idsProducto.length === 0) {
             alert("Uno o más productos no tienen suficiente stock o no seleccionaste ninguno");
             return;
         }
@@ -94,14 +80,20 @@ function GestionEventos() {
 
         if (res.ok) {
             alert("Evento creado exitosamente");
-            setNombre(""); setFechaInicio(""); setFechaFin(""); setDescuento("");
-            setSeleccionCategorias([]); setSeleccionProductos([]); setModo("ninguno");
+            setNombre("");
+            setFechaInicio("");
+            setFechaFin("");
+            setDescuento("");
+            setSeleccionCategorias([]);
+            setSeleccionProductos([]);
+            setModo("ninguno");
             cargarDatos();
         } else {
+            const errorText = await res.text();
+            console.error("Error detallado:", errorText);
             alert("Error al crear el evento");
         }
     };
-
 
     return (
         <div className="productos-container">
@@ -119,25 +111,19 @@ function GestionEventos() {
                 {modo === "categorias" && (
                     <div>
                         <label>Seleccione Categorías:</label>
-                       // GestionEventos.jsx (solo el fragmento relevante actualizado)
-
                         <select
                             multiple
                             size={5}
                             style={{ width: "300px", margin: "10px auto", display: "block" }}
-                            value={modo === "categorias" ? seleccionCategorias : seleccionProductos}
+                            value={seleccionCategorias}
                             onChange={(e) => {
                                 const selected = Array.from(e.target.selectedOptions).map(opt => parseInt(opt.value));
-                                if (modo === "categorias") {
-                                    setSeleccionCategorias(selected);
-                                } else {
-                                    setSeleccionProductos(selected);
-                                }
+                                setSeleccionCategorias(selected);
                             }}
                         >
-                            {(modo === "categorias" ? categorias : productos).map((item) => (
-                                <option key={item.id} value={item.id}>
-                                    {item.nombre}
+                            {categorias.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.nombre}
                                 </option>
                             ))}
                         </select>
@@ -157,7 +143,7 @@ function GestionEventos() {
                             style={{ width: "250px", height: "150px" }}
                         >
                             {productos.map((p) => (
-                                <option key={p.nombre + p.categoriaProductoId} value={p.id || p.nombre}>
+                                <option key={p.id} value={p.id}>
                                     {p.nombre}
                                 </option>
                             ))}

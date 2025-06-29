@@ -34,8 +34,8 @@ namespace MiAppCRUD.Server.Services
             var nuevoEvento = new Evento
             {
                 Nombre = dto.Nombre,
-                FechaInicio = dto.FechaInicio,
-                FechaFin = dto.FechaFin,
+                FechaInicio = DateTime.SpecifyKind(dto.FechaInicio, DateTimeKind.Utc),
+                FechaFin = DateTime.SpecifyKind(dto.FechaFin, DateTimeKind.Utc),
                 DescuentoPorcentaje = dto.DescuentoPorcentaje
             };
 
@@ -70,8 +70,8 @@ namespace MiAppCRUD.Server.Services
                 return null;
 
             eventoExistente.Nombre = dto.Nombre;
-            eventoExistente.FechaInicio = dto.FechaInicio;
-            eventoExistente.FechaFin = dto.FechaFin;
+            eventoExistente.FechaInicio = DateTime.SpecifyKind(dto.FechaInicio, DateTimeKind.Utc);
+            eventoExistente.FechaFin = DateTime.SpecifyKind(dto.FechaFin, DateTimeKind.Utc);
             eventoExistente.DescuentoPorcentaje = dto.DescuentoPorcentaje;
 
             _context.EventosProductos.RemoveRange(eventoExistente.Productos);
@@ -110,6 +110,7 @@ namespace MiAppCRUD.Server.Services
                 .Where(p => p.Stock > 50)
                 .Select(p => new ProductoDto
                 {
+                    Id = p.Id,
                     Nombre = p.Nombre,
                     Descripcion = p.Descripcion,
                     Precio = p.Precio,

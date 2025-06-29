@@ -11,12 +11,13 @@ namespace MiAppCRUD.Server.Controllers
     [ApiController]
     public class ProductoController : ControllerBase
     {
-        private readonly ProductoService _productoService;
+        private readonly IProductoService _productoService;
 
-        public ProductoController(ProductoService productoService)
+        public ProductoController(IProductoService service)
         {
-            _productoService = productoService;
+            _productoService = service;
         }
+
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductoRespuestaDto>>> GetProductos()

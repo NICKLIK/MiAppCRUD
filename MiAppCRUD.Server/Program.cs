@@ -1,4 +1,6 @@
 using MiAppCRUD.Server.Data;
+using MiAppCRUD.Server.Factories;
+using MiAppCRUD.Server.Repositories;
 using MiAppCRUD.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -17,10 +19,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services.AddScoped<UsuarioService>();
-builder.Services.AddScoped<ProductoService>();
+builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<CategoriaProductoService>();
 builder.Services.AddScoped<ReabastecimientoStockService>();
 builder.Services.AddScoped<EventoService, EventoServiceImpl>();
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
+builder.Services.AddScoped<IProductoFactory, ProductoFactory>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioFactory, UsuarioFactory>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ICategoriaProductoRepository, CategoriaProductoRepository>();
+builder.Services.AddScoped<ICategoriaProductoService, CategoriaProductoService>();
+builder.Services.AddScoped<IReabastecimientoStockRepository, ReabastecimientoStockRepository>();
+builder.Services.AddScoped<IReabastecimientoStockFactory, ReabastecimientoStockFactory>();
+builder.Services.AddScoped<IReabastecimientoStockService, ReabastecimientoStockService>();
 
 
 

@@ -2,7 +2,6 @@
 using MiAppCRUD.Server.Models;
 using MiAppCRUD.Server.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MiAppCRUD.Server.Controllers
 {
@@ -10,9 +9,9 @@ namespace MiAppCRUD.Server.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        private readonly UsuarioService _usuarioService;
+        private readonly IUsuarioService _usuarioService;
 
-        public UsuarioController(UsuarioService usuarioService)
+        public UsuarioController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
         }
@@ -24,18 +23,15 @@ namespace MiAppCRUD.Server.Controllers
             return Ok(usuarios);
         }
 
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
             var usuario = await _usuarioService.GetUsuarioById(id);
             if (usuario == null)
-            {
                 return NotFound();
-            }
+
             return Ok(usuario);
         }
-
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] Usuario usuario)
@@ -65,9 +61,7 @@ namespace MiAppCRUD.Server.Controllers
             {
                 bool loginExitoso = await _usuarioService.VerificarLogin(credenciales.Correo, credenciales.Contrasena);
                 if (!loginExitoso)
-                {
                     return Unauthorized("Credenciales incorrectas");
-                }
 
                 return Ok(new { mensaje = "Inicio de sesión exitoso" });
             }
@@ -77,25 +71,18 @@ namespace MiAppCRUD.Server.Controllers
             }
         }
 
-
-
-
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUsuario(int id, Usuario usuario)
         {
             try
             {
-
                 if (!UbicacionHelper.ValidarCiudadProvincia(usuario.Provincia, usuario.Ciudad))
-                {
                     return BadRequest("La ciudad no pertenece a la provincia seleccionada");
-                }
 
                 var result = await _usuarioService.ActualizarUsuario(id, usuario);
                 if (result == null)
-                {
                     return NotFound();
-                }
+
                 return NoContent();
             }
             catch (Exception ex)
@@ -104,38 +91,32 @@ namespace MiAppCRUD.Server.Controllers
             }
         }
 
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var result = await _usuarioService.EliminarUsuario(id);
             if (result == null)
-            {
                 return NotFound();
-            }
+
             return NoContent();
         }
-
 
         [HttpGet("provincias")]
         public ActionResult<List<string>> GetProvincias()
         {
-            var provincias = UbicacionHelper.GetProvincias();
+            var provincias = _usuarioService.GetProvincias();
             return Ok(provincias);
         }
-
 
         [HttpGet("ciudades/{provincia}")]
         public ActionResult<List<string>> GetCiudades(string provincia)
         {
-            var ciudades = UbicacionHelper.GetCiudadesPorProvincia(provincia);
+            var ciudades = _usuarioService.GetCiudadesPorProvincia(provincia);
             if (ciudades.Count == 0)
-            {
                 return NotFound($"No se encontraron ciudades para la provincia {provincia}");
-            }
+
             return Ok(ciudades);
         }
-
 
         [HttpGet("validar-correo/{correo}")]
         public async Task<ActionResult<bool>> ValidarCorreo(string correo)
@@ -143,7 +124,6 @@ namespace MiAppCRUD.Server.Controllers
             var existe = await _usuarioService.GetUsuarioByCorreo(correo);
             return Ok(existe == null);
         }
-
 
         [HttpPost("login-admin")]
         public async Task<IActionResult> LoginAdmin([FromBody] LoginAdminRequest request)
@@ -158,7 +138,5 @@ namespace MiAppCRUD.Server.Controllers
                 rol = usuario.Rol
             });
         }
-
-
     }
 }

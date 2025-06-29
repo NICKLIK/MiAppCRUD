@@ -1,25 +1,24 @@
-﻿using MiAppCRUD.Server.Data;
+﻿using MiAppCRUD.Server.Factories;
 using MiAppCRUD.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using MiAppCRUD.Server.Repositories;
 
 namespace MiAppCRUD.Server.Services
 {
-    public class ReabastecimientoStockService
+    public class ReabastecimientoStockService : IReabastecimientoStockService
     {
-        private readonly AppDbContext _context;
+        private readonly IReabastecimientoStockRepository _repository;
+        private readonly IReabastecimientoStockFactory _factory;
 
-        public ReabastecimientoStockService(AppDbContext context)
+        public ReabastecimientoStockService(IReabastecimientoStockRepository repository, IReabastecimientoStockFactory factory)
         {
-            _context = context;
+            _repository = repository;
+            _factory = factory;
         }
 
         public async Task<List<ReabastecimientoStock>> ObtenerTodos()
         {
             var hoy = DateTime.UtcNow.Date;
-
-            var solicitudes = await _context.ReabastecimientosStock
-                .Include(r => r.Producto)
-                .ToListAsync();
+            var solicitudes = await _repository.GetAllWithProducto();
 
             var cambios = false;
 
@@ -27,11 +26,9 @@ namespace MiAppCRUD.Server.Services
             {
                 if (solicitud.Estado == "En proceso" && solicitud.FechaEntrega.Date <= hoy)
                 {
-                    var producto = solicitud.Producto;
-
-                    if (producto != null)
+                    if (solicitud.Producto != null)
                     {
-                        producto.Stock += solicitud.Cantidad;
+                        solicitud.Producto.Stock += solicitud.Cantidad;
                         solicitud.Estado = "Finalizado";
                         cambios = true;
                     }
@@ -40,70 +37,43 @@ namespace MiAppCRUD.Server.Services
 
             if (cambios)
             {
-                await _context.SaveChangesAsync();
+                await _repository.Save();
             }
 
             return solicitudes;
         }
 
-
-        public async Task<ReabastecimientoStock> ObtenerPorId(int id)
+        public async Task<ReabastecimientoStock?> ObtenerPorId(int id)
         {
-            return await _context.ReabastecimientosStock
-                .Include(r => r.Producto)
-                .FirstOrDefaultAsync(r => r.Id == id);
+            return await _repository.GetByIdWithProducto(id);
         }
 
         public async Task<ReabastecimientoStock> Crear(ReabastecimientoDto dto)
         {
-            try
-            {
-                var solicitud = new ReabastecimientoStock
-                {
-                    ProductoId = dto.ProductoId,
-                    Cantidad = dto.Cantidad,
-                    FechaEntrega = DateTime.SpecifyKind(dto.FechaEntrega, DateTimeKind.Utc),
-                    Estado = "En proceso",
-                    FechaSolicitud = DateTime.UtcNow
-                };
-
-                _context.ReabastecimientosStock.Add(solicitud);
-                await _context.SaveChangesAsync();
-                return solicitud;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ERROR al guardar solicitud:");
-                Console.WriteLine(ex.Message);
-                if (ex.InnerException != null)
-                    Console.WriteLine("Inner: " + ex.InnerException.Message);
-                throw;
-            }
+            var nueva = _factory.CrearDesdeDto(dto);
+            await _repository.Create(nueva);
+            return nueva;
         }
 
-
-        public async Task<ReabastecimientoStock> Actualizar(int id, ReabastecimientoDto dto)
+        public async Task<ReabastecimientoStock?> Actualizar(int id, ReabastecimientoDto dto)
         {
-            var existente = await _context.ReabastecimientosStock.FindAsync(id);
+            var existente = await _repository.GetById(id);
             if (existente == null) return null;
 
             existente.ProductoId = dto.ProductoId;
             existente.Cantidad = dto.Cantidad;
             existente.FechaEntrega = DateTime.SpecifyKind(dto.FechaEntrega, DateTimeKind.Utc);
-            
 
-            await _context.SaveChangesAsync();
+            await _repository.Update(existente);
             return existente;
         }
 
-
         public async Task<bool> Eliminar(int id)
         {
-            var existente = await _context.ReabastecimientosStock.FindAsync(id);
+            var existente = await _repository.GetById(id);
             if (existente == null) return false;
 
-            _context.ReabastecimientosStock.Remove(existente);
-            await _context.SaveChangesAsync();
+            await _repository.Delete(existente);
             return true;
         }
     }

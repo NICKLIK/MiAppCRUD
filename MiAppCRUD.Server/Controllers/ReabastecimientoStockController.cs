@@ -8,9 +8,9 @@ namespace MiAppCRUD.Server.Controllers
     [ApiController]
     public class ReabastecimientoStockController : ControllerBase
     {
-        private readonly ReabastecimientoStockService _service;
+        private readonly IReabastecimientoStockService _service;
 
-        public ReabastecimientoStockController(ReabastecimientoStockService service)
+        public ReabastecimientoStockController(IReabastecimientoStockService service)
         {
             _service = service;
         }
@@ -43,8 +43,6 @@ namespace MiAppCRUD.Server.Controllers
                 return BadRequest(new { mensaje = ex.Message });
             }
         }
-
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ReabastecimientoDto dto)

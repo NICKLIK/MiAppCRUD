@@ -1,29 +1,27 @@
-﻿using MiAppCRUD.Server.Data;
+﻿using MiAppCRUD.Server.Factories;
 using MiAppCRUD.Server.Models;
+using MiAppCRUD.Server.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace MiAppCRUD.Server.Services
 {
-    public class ProductoService
+    public class ProductoService : IProductoService
     {
-        private readonly AppDbContext _context;
+        private readonly IProductoRepository _repository;
+        private readonly IProductoFactory _productoFactory;
 
-        public ProductoService(AppDbContext context)
+        public ProductoService(IProductoRepository repository, IProductoFactory productoFactory)
         {
-            _context = context;
+            _repository = repository;
+            _productoFactory = productoFactory;
         }
 
         public async Task<List<ProductoRespuestaDto>> GetProductos()
         {
+            var productos = await _repository.GetAllWithCategoria();
             var hoy = DateTime.UtcNow;
 
-            // Traer productos + categorías
-            var productos = await _context.Productos.Include(p => p.Categoria).ToListAsync();
-
-            // Traer reabastecimientos "en proceso" cuya fecha ya pasó
-            var reabastecimientosPendientes = await _context.ReabastecimientosStock
-                .Where(r => r.Estado == "En proceso" && r.FechaEntrega <= hoy)
-                .ToListAsync();
+            var reabastecimientosPendientes = await _repository.GetReabastecimientosPendientes(hoy);
 
             foreach (var r in reabastecimientosPendientes)
             {
@@ -35,10 +33,9 @@ namespace MiAppCRUD.Server.Services
                 }
             }
 
-            // Guardar cambios en la BD si hubo modificaciones
             if (reabastecimientosPendientes.Any())
             {
-                await _context.SaveChangesAsync();
+                await _repository.SaveChanges();
             }
 
             return productos.Select(p => new ProductoRespuestaDto
@@ -55,12 +52,9 @@ namespace MiAppCRUD.Server.Services
             }).ToList();
         }
 
-
         public async Task<ProductoRespuestaDto?> GetProductoById(int id)
         {
-            var producto = await _context.Productos.Include(p => p.Categoria)
-                                                   .FirstOrDefaultAsync(p => p.Id == id);
-
+            var producto = await _repository.GetByIdWithCategoria(id);
             if (producto == null) return null;
 
             return new ProductoRespuestaDto
@@ -79,23 +73,13 @@ namespace MiAppCRUD.Server.Services
 
         public async Task<ProductoRespuestaDto> CrearProducto(ProductoDto dto)
         {
-            var categoria = await _context.CategoriasProducto.FindAsync(dto.CategoriaProductoId);
+            var categoria = await _repository.GetCategoriaById(dto.CategoriaProductoId);
             if (categoria == null)
                 throw new Exception("La categoría seleccionada no existe");
 
-            var producto = new Producto
-            {
-                Nombre = dto.Nombre,
-                Descripcion = dto.Descripcion,
-                Precio = dto.Precio,
-                Stock = dto.Stock,
-                ImagenUrl = dto.ImagenUrl,
-                EcuniPoints = dto.EcuniPoints,
-                CategoriaProductoId = dto.CategoriaProductoId
-            };
+            var producto = _productoFactory.CrearProducto(dto);
 
-            _context.Productos.Add(producto);
-            await _context.SaveChangesAsync();
+            await _repository.Create(producto);
 
             return new ProductoRespuestaDto
             {
@@ -111,14 +95,11 @@ namespace MiAppCRUD.Server.Services
             };
         }
 
-
         public async Task<Producto?> ActualizarProducto(int id, Producto producto)
         {
-            var productoExistente = await _context.Productos.FindAsync(id);
+            var productoExistente = await _repository.GetById(id);
             if (productoExistente == null)
-            {
                 return null;
-            }
 
             productoExistente.Nombre = producto.Nombre;
             productoExistente.Descripcion = producto.Descripcion;
@@ -128,33 +109,29 @@ namespace MiAppCRUD.Server.Services
             productoExistente.EcuniPoints = producto.EcuniPoints;
             productoExistente.CategoriaProductoId = producto.CategoriaProductoId;
 
-            await _context.SaveChangesAsync();
+            await _repository.SaveChanges();
             return productoExistente;
         }
 
         public async Task<bool> EliminarProducto(int id)
         {
-            var producto = await _context.Productos.FindAsync(id);
+            var producto = await _repository.GetById(id);
             if (producto == null)
-            {
                 return false;
-            }
 
-            _context.Productos.Remove(producto);
-            await _context.SaveChangesAsync();
+            _repository.Delete(producto);
+            await _repository.SaveChanges();
             return true;
         }
 
         public async Task<Producto?> GetProductoEntityById(int id)
         {
-            return await _context.Productos.FindAsync(id);
+            return await _repository.GetById(id);
         }
 
         public async Task GuardarCambios()
         {
-            await _context.SaveChangesAsync();
+            await _repository.SaveChanges();
         }
-
     }
-
 }

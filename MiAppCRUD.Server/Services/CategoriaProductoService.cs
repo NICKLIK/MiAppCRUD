@@ -1,57 +1,51 @@
-﻿using MiAppCRUD.Server.Data;
-using MiAppCRUD.Server.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using MiAppCRUD.Server.Models;
+using MiAppCRUD.Server.Repositories;
 
 namespace MiAppCRUD.Server.Services
 {
-    public class CategoriaProductoService
+    public class CategoriaProductoService : ICategoriaProductoService
     {
-        private readonly AppDbContext _context;
+        private readonly ICategoriaProductoRepository _repository;
 
-        public CategoriaProductoService(AppDbContext context)
+        public CategoriaProductoService(ICategoriaProductoRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        public async Task<List<CategoriaProducto>> GetCategorias()
+        public async Task<List<CategoriaProducto>> ObtenerTodas()
         {
-            return await _context.CategoriasProducto
-                                 .AsNoTracking() 
-                                 .ToListAsync();
+            return await _repository.GetAll();
         }
 
-
-        public async Task<CategoriaProducto> GetCategoriaById(int id)
+        public async Task<CategoriaProducto?> ObtenerPorId(int id)
         {
-            return await _context.CategoriasProducto
-                                 .Include(c => c.Productos)
-                                 .FirstOrDefaultAsync(c => c.Id == id);
+            return await _repository.GetById(id);
         }
 
-        public async Task<CategoriaProducto> CrearCategoria(CategoriaProducto categoria)
+        public async Task<CategoriaProducto> Crear(CategoriaProducto categoria)
         {
-            _context.CategoriasProducto.Add(categoria);
-            await _context.SaveChangesAsync();
+            await _repository.Create(categoria);
             return categoria;
         }
 
-        public async Task<CategoriaProducto> ActualizarCategoria(int id, CategoriaProducto categoria)
+        public async Task<CategoriaProducto?> Actualizar(int id, CategoriaProducto categoria)
         {
-            var existente = await _context.CategoriasProducto.FindAsync(id);
-            if (existente == null) return null;
+            var existente = await _repository.GetById(id);
+            if (existente == null)
+                return null;
 
             existente.Nombre = categoria.Nombre;
-            await _context.SaveChangesAsync();
+            await _repository.Update(existente);
             return existente;
         }
 
-        public async Task<bool> EliminarCategoria(int id)
+        public async Task<bool> Eliminar(int id)
         {
-            var categoria = await _context.CategoriasProducto.FindAsync(id);
-            if (categoria == null) return false;
+            var existente = await _repository.GetById(id);
+            if (existente == null)
+                return false;
 
-            _context.CategoriasProducto.Remove(categoria);
-            await _context.SaveChangesAsync();
+            await _repository.Delete(existente);
             return true;
         }
     }

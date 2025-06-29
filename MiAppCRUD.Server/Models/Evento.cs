@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MiAppCRUD.Server.Models
 {
@@ -7,13 +8,15 @@ namespace MiAppCRUD.Server.Models
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
+
+        [Column(TypeName = "timestamp with time zone")]
         public DateTime FechaInicio { get; set; }
+
+        [Column(TypeName = "timestamp with time zone")]
         public DateTime FechaFin { get; set; }
 
-        // Opcional: descuento sobre precio (solo aplica si se desea)
         public double? DescuentoPorcentaje { get; set; }
 
-        // Relación: uno a muchos con EventoProducto
         public List<EventoProducto> Productos { get; set; } = new();
     }
 }

@@ -1,103 +1,66 @@
-﻿using MiAppCRUD.Server.Data;
+﻿using MiAppCRUD.Server.Factories;
 using MiAppCRUD.Server.Helpers;
 using MiAppCRUD.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using MiAppCRUD.Server.Repositories;
 
 namespace MiAppCRUD.Server.Services
 {
-    public class UsuarioService
+    public class UsuarioService : IUsuarioService
     {
-        private readonly AppDbContext _context;
+        private readonly IUsuarioRepository _repository;
+        private readonly IUsuarioFactory _factory;
 
-        public UsuarioService(AppDbContext context)
+        public UsuarioService(IUsuarioRepository repository, IUsuarioFactory factory)
         {
-            _context = context;
+            _repository = repository;
+            _factory = factory;
         }
 
-        public async Task<List<Usuario>> GetUsuarios() => await _context.Usuarios.ToListAsync();
-
-        public async Task<Usuario> GetUsuarioByCorreo(string correo) =>
-            await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
-
-        public async Task<Usuario> GetUsuarioById(int id) =>
-            await _context.Usuarios.FindAsync(id);
-
-        public async Task<Usuario> CrearUsuario(Usuario usuario, string claveAdmin = null)
+        public async Task<Usuario> CrearUsuario(Usuario usuario, string? claveAdmin = null)
         {
-            var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == usuario.Correo);
+            var usuarioExistente = await _repository.GetByCorreo(usuario.Correo);
             if (usuarioExistente != null)
                 throw new Exception("El correo electrónico ya está registrado");
 
             if (!UbicacionHelper.ValidarCiudadProvincia(usuario.Provincia, usuario.Ciudad))
                 throw new Exception("La ciudad no pertenece a la provincia seleccionada");
 
-            
             bool esAdmin = usuario.Correo.ToLower().EndsWith("@admin.com");
+            string? claveGenerada = null;
 
             if (esAdmin)
             {
-                
-                string nuevaClave = Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
-
-                
-                var claveAdminGenerada = new ClaveAdmin
-                {
-                    Correo = usuario.Correo,
-                    Clave = nuevaClave,
-                    Usada = true 
-                };
-
-                _context.ClavesAdmin.Add(claveAdminGenerada);
-                usuario.Rol = "ADMIN";
-            }
-            else
-            {
-                usuario.Rol = "USUARIO";
+                var nuevaClave = await _repository.GenerarNuevaClaveAdmin(usuario.Correo);
+                claveGenerada = nuevaClave.Clave;
             }
 
-            
-            _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
-            return usuario;
+            var nuevoUsuario = _factory.CrearUsuario(usuario, esAdmin, claveGenerada);
+
+            await _repository.Create(nuevoUsuario);
+            return nuevoUsuario;
         }
 
         public async Task<bool> VerificarLogin(string correo, string contrasena)
         {
-            correo = correo.Trim();
-            contrasena = contrasena.Trim();
-
-            Console.WriteLine(">>> LOGIN CORREO RECIBIDO: " + correo);
-            Console.WriteLine(">>> LOGIN CONTRASEÑA RECIBIDA: " + contrasena);
-
-            var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
-
+            var user = await _repository.GetByCorreo(correo.Trim());
             if (user != null)
-            {
-                Console.WriteLine(">>> USUARIO ENCONTRADO. CONTRASEÑA EN BD: " + user.Contrasena);
-                Console.WriteLine(">>> ¿Coincide? " + (user.Contrasena == contrasena));
-                return user.Contrasena == contrasena;
-            }
+                return user.Contrasena == contrasena.Trim();
 
-            Console.WriteLine(">>> USUARIO NO ENCONTRADO");
             return false;
         }
 
-
-
-        public async Task<Usuario> ActualizarUsuario(int id, Usuario usuario)
+        public async Task<Usuario?> ActualizarUsuario(int id, Usuario usuario)
         {
-            var usuarioExistente = await _context.Usuarios.FindAsync(id);
+            var usuarioExistente = await _repository.GetById(id);
             if (usuarioExistente == null) return null;
 
-            
             if (usuarioExistente.Correo != usuario.Correo)
             {
-                var correoExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == usuario.Correo);
+                var correoExistente = await _repository.GetByCorreo(usuario.Correo);
                 if (correoExistente != null)
                     throw new Exception("El correo electrónico ya está registrado");
             }
 
-            
             if (!UbicacionHelper.ValidarCiudadProvincia(usuario.Provincia, usuario.Ciudad))
                 throw new Exception("La ciudad no pertenece a la provincia seleccionada");
 
@@ -110,56 +73,65 @@ namespace MiAppCRUD.Server.Services
             usuarioExistente.Ciudad = usuario.Ciudad;
             usuarioExistente.Contrasena = usuario.Contrasena;
 
-
-            await _context.SaveChangesAsync();
+            await _repository.Update(usuarioExistente);
             return usuarioExistente;
         }
 
-        public async Task<Usuario> EliminarUsuario(int id)
+        public async Task<Usuario?> EliminarUsuario(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _repository.GetById(id);
             if (usuario == null) return null;
 
-            _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
+            await _repository.Delete(usuario);
             return usuario;
         }
 
-        
         public List<string> GetProvincias()
         {
             return UbicacionHelper.ProvinciaCiudades.Keys.ToList();
         }
-            
-        
+
         public List<string> GetCiudadesPorProvincia(string provincia)
         {
             if (UbicacionHelper.ProvinciaCiudades.ContainsKey(provincia))
-            {
                 return UbicacionHelper.ProvinciaCiudades[provincia];
-            }
+
             return new List<string>();
         }
 
         public async Task<Usuario?> ObtenerUsuarioAdmin(string correo, string contrasena, string claveAdmin)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u =>
-                u.Correo == correo && u.Contrasena == contrasena && u.Rol == "ADMIN");
+            var usuario = await _repository.GetByCorreo(correo);
+            if (usuario == null || usuario.Contrasena != contrasena || usuario.Rol != "ADMIN")
+                return null;
 
-            var claveValida = await _context.ClavesAdmin.FirstOrDefaultAsync(c =>
-                c.Correo == correo && c.Clave == claveAdmin && c.Usada);
+            var claveValida = await _repository.GetClaveAdminValidada(correo, claveAdmin);
+            if (claveValida == null)
+                return null;
 
-            if (usuario != null && claveValida != null)
-                return usuario;
-
-            return null;
+            return usuario;
         }
-
 
         public async Task<string?> ObtenerClaveAdminPorCorreo(string correo)
         {
-            var clave = await _context.ClavesAdmin.FirstOrDefaultAsync(c => c.Correo == correo);
+            var clave = await _repository.GetClaveAdminByCorreo(correo);
             return clave?.Clave;
+        }
+
+
+        public async Task<List<Usuario>> GetUsuarios()
+        {
+            return await _repository.GetAll();
+        }
+
+        public async Task<Usuario?> GetUsuarioByCorreo(string correo)
+        {
+            return await _repository.GetByCorreo(correo);
+        }
+
+        public async Task<Usuario?> GetUsuarioById(int id)
+        {
+            return await _repository.GetById(id);
         }
 
     }
