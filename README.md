@@ -1,5 +1,54 @@
+# Implementacion de Patrones de Diseno y Principios SOLID al Core MVC
+Proyecto desarrollado en **ASP.NET Core** + **PostgreSQL** + **React** (Vite) como frontend.
 
-# AVANCE, PRESENTACIÓN Y DEFENSA DEL CORE MVC - ECUNISHOP - TIENDA VIERTUAL DE PRODUCTOS
+
+Inicialmente el proyecto fue desarrollado de manera funcional pero con bajo nivel de desacoplamiento. Posteriormente, se realizó una refactorización para aplicar buenas prácticas como **principios SOLID** y **patrones de diseño**, logrando una arquitectura mucho más escalable y mantenible.
+
+
+Estado Inicial del Proyecto (Antes de la Refactorización)
+
+Acceso directo a **DbContext** desde los Services.
+Lógica de negocio y persistencia de datos totalmente mezclada.
+Sin separación de responsabilidades claras.
+Sin uso de **interfaces**, **repositorios** o **factories**.
+Controllers dependientes de **clases concretas**, no de abstracciones.
+
+
+Principios SOLID Aplicados
+S - Single Responsibility Principle (SRP): Cada clase tiene una única responsabilidad (Repositorios solo acceden a datos, Services solo ejecutan lógica de negocio, Factories solo crean objetos) 
+D - Dependency Inversion Principle (DIP): Los servicios y controladores dependen de **interfaces** (abstracciones), no de clases concretas. Inyección de dependencias implementada 
+
+
+Patrones de Diseño Aplicados
+
+Repository Pattern: Se crearon interfaces y clases concretas por cada módulo: `IProductoRepository`, `IUsuarioRepository`, etc. Separando por completo la lógica de persistencia 
+Factory Pattern:  Se implementaron factories para la creación de entidades con lógica especial o inicialización personalizada 
+
+
+Cambios Estructurales Realizados
+
+Servicios accedían directo a DbContext | Servicios ahora solo llaman a Repositorios 
+Creación de entidades hecha a mano dentro de los servicios | Uso de Factories para centralizar la creación 
+Alta dependencia de Entity Framework | Lógica de negocio totalmente desacoplada de la capa de acceso a datos 
+Sin interfaces | Todas las dependencias ahora están abstraídas por interfaces 
+
+
+Módulos refactorizados
+
+Productos: SRP + DIP + Repository + Factory 
+Usuarios: SRP + DIP + Repository + Factory 
+Categorías: SRP + DIP + Repository 
+Reabastecimiento de Stock: SRP + DIP + Repository + Factory 
+
+Beneficios Técnicos Obtenidos
+
+Código modular, mantenible y fácil de testear.
+Cumplimiento de estándares profesionales de arquitectura.
+Facilidad para cambiar motor de base de datos o capa de persistencia.
+Preparación para futuras extensiones o migración a microservicios.
+
+
+# AVANCE, PRESENTACIÓN Y DEFENSA DEL CORE MVC - ECUNISHOP - TIENDA VIRTUAL DE PRODUCTOS
 
 
 Es una aplicación fullstack desarrollada con React (Vite) en el frontend y ASP.NET Core + PostgreSQL en el backend. Su propósito es administrar un catálogo de productos, gestionar eventos promocionales, controlar el stock y permitir la experiencia de compra para usuarios, todo dentro de un entorno moderno, dinámico y escalable.
