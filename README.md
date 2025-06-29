@@ -1,3 +1,106 @@
+
+# AVANCE, PRESENTACIÓN Y DEFENSA DEL CORE MVC - ECUNISHOP - TIENDA VIERTUAL DE PRODUCTOS
+
+
+Es una aplicación fullstack desarrollada con React (Vite) en el frontend y ASP.NET Core + PostgreSQL en el backend. Su propósito es administrar un catálogo de productos, gestionar eventos promocionales, controlar el stock y permitir la experiencia de compra para usuarios, todo dentro de un entorno moderno, dinámico y escalable.
+
+---
+
+Tecnologías Utilizadas
+
+Frontend
+- React (Vite)
+- CSS personalizado
+- React Router DOM
+- LocalStorage para gestión de carrito de compras
+
+Backend
+-  ASP.NET Core 6
+-  PostgreSQL en Render
+-  Entity Framework Core
+-  Roles, validaciones y autenticación
+
+---
+
+Funcionalidades Generales
+
+Panel Administrador
+- CRUD de Categorías de Producto
+- CRUD de Productos (con imagen, precio, ecunipoints, stock)
+- Peticiones de Reabastecimiento (fecha programada, cantidad, estado)
+- Gestión de Eventos Promocionales
+- CRUD de Usuarios (con rol admin o usuario normal)
+
+ Módulo de Catálogo (Usuario Final)
+- Visualización de productos por categoría
+- Detalles de cada producto (modal con botones)
+- Sistema de carrito de compras
+- Reserva de productos en localStorage
+- Visualización de eventos activos destacados
+
+---
+
+Funcionalidades del Core
+
+Análisis y Gestión del Stock
+- Validación automática de productos con stock > 50 para incluirlos en eventos
+- Actualización de stock solo a través del sistema de reabastecimiento programado
+
+Gestión de Eventos
+- Creación de eventos promocionales por:
+  - Categorías (todos los productos de una categoría con stock suficiente)
+  - Productos individuales
+- Aplicación de descuentos por porcentaje
+- Visualización de eventos registrados
+- Eliminación y validación de eventos activos
+- Visualización de productos destacados en el catálogo cuando hay eventos activos
+
+Reportes Inteligentes (Módulo separado)
+- Ingresos por producto, categoría y ubicación
+- Recomendaciones automáticas para futuras promociones
+
+---
+
+Estructura General del Proyecto
+
+MiAppCRUD.Server/
+├── Controllers/
+│ └── EventoController.cs
+├── Models/
+│ ├── Producto.cs
+│ ├── CategoriaProducto.cs
+│ ├── Evento.cs
+│ ├── EventoDto.cs
+│ ├── ProductoDto.cs
+│ └── CategoriaProductoDto.cs
+├── Services/
+│ ├── EventoService.cs
+│ └── EventoServiceImpl.cs
+└── Data/
+└── AppDbContext.cs
+
+miappcrud.client/
+├── views/
+│ ├── Catalogo.jsx
+│ ├── CarritoCompras.jsx
+│ ├── GestionCatalogo.jsx
+│ ├── GestionEventos.jsx
+│ └── ProductosAdmin.jsx
+└── assets/
+└── Productos.css
+
+---
+
+Estado del Proyecto
+
+- Sistema de autenticación con roles (admin y usuario)
+- CRUD completo de productos y categorías
+- Gestión de stock programada
+- Sistema de eventos funcional
+- Frontend y backend integrados
+- Base de datos desplegada en Render
+
+
 # DEBER ADMIN MVC
 Validación de Correo Electrónico en Backend
 Validación de Unicidad de Correo Electrónico
